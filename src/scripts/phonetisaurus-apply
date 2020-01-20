@@ -208,7 +208,7 @@ class G2PModelTester () :
                 line = u"{0}\t{1}".format (word, pron)
             print (line.encode ("utf8"))
             if fid:
-                write(line.encode ("utf8") + "\n")
+                fid.write(line.encode ("utf8") + "\n")
 
         if fid:
             fid.close()
@@ -269,7 +269,7 @@ class G2PModelTester () :
                     line = u"{0}\t{1}".format (word, pron)
                 print (line.encode ("utf8"))
                 if fid:
-                    write(line.encode ("utf8") + "\n")
+                    fid.write(line.encode ("utf8") + "\n")
         
         if fid:
             fid.close()
