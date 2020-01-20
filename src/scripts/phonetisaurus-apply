@@ -17,6 +17,7 @@ class G2PModelTester () :
     def __init__ (self, model, **kwargs) :
         self.model = model
         self.lexicon_file = kwargs.get ("lexicon", None)
+        self.save_to_file = kwargs.get ("save_to_file", None)
         self.nbest = kwargs.get ("nbest", 1)
         self.thresh = kwargs.get ("thresh", 99)
         self.beam = kwargs.get ("beam", 10000)
@@ -193,6 +194,10 @@ class G2PModelTester () :
         Args:
             word_list_file (str): The input word list.
         """
+        fid = None
+        if self.save_to_file:
+            fid = open(self.save_to_file, "w")
+
         for word, score, pron in self.runG2PCommand (word_list_file) :
             line = u""
             if self.verbose :
@@ -202,6 +207,11 @@ class G2PModelTester () :
             else :
                 line = u"{0}\t{1}".format (word, pron)
             print (line.encode ("utf8"))
+            if fid:
+                write(line.encode ("utf8") + "\n")
+
+        if fid:
+            fid.close()
         
         return
 
@@ -243,6 +253,10 @@ class G2PModelTester () :
                 continue
             target_lexicon [word].append ((score, pron))
 
+        fid = None
+        if self.save_to_file:
+            fid = open(self.save_to_file, "w")
+
         #Finally, sort everything that is left and print it.
         for word in sorted (target_lexicon.keys ()) :
             for score, pron in target_lexicon [word] :
@@ -254,7 +268,12 @@ class G2PModelTester () :
                 else :
                     line = u"{0}\t{1}".format (word, pron)
                 print (line.encode ("utf8"))
+                if fid:
+                    write(line.encode ("utf8") + "\n")
         
+        if fid:
+            fid.close()
+
         os.unlink (tmpwordlist.name)
         return
     
@@ -310,6 +329,8 @@ if __name__ == "__main__" :
                          action="store_true")
     parser.add_argument ("--word_list", "-wl", help="Input word or word list to apply "
                         "G2P model to.", type=str)
+    parser.add_argument ("--save_to_file", help="Save the generated output to a file.",
+                         default=None, type=str)
     
     parser.add_argument ("--verbose", "-v", help="Verbose mode.",
                          default=False, action="store_true")
